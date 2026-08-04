@@ -5,93 +5,87 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b1f33">
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
-  <meta name="description" content="Simulador de preparación PME 2026 con banco auditado, corrección explicada y estadísticas.">
   <title>Simulador PME 2026</title>
-  <link rel="stylesheet" href="assets/app.css?v=20260804">
+  <style>
+    html,body{margin:0;min-height:100%;background:#0b1f33;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{min-height:100vh;display:grid;place-items:center;padding:24px;box-sizing:border-box}.box{width:min(460px,100%);text-align:center}.spinner{width:48px;height:48px;margin:0 auto 20px;border:5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}h1{font-size:28px;margin:0 0 10px}p{opacity:.78;line-height:1.5}.progress{height:7px;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:20px}.progress div{height:100%;width:3%;background:#59b6ec;transition:width .25s}.error{display:none;background:#fff;color:#14202c;padding:22px;border-radius:17px;text-align:left}.error strong{font-size:20px}.detail{font-size:12px;color:#657487;word-break:break-word}
+  </style>
 </head>
 <body>
-<header class="topbar">
-  <button id="brandBtn" class="brand" type="button" aria-label="Volver al inicio">
-    <span class="brand-mark">PME</span><span><strong>Simulador 2026</strong><small>E2 · Conducción</small></span>
-  </button>
-  <div class="top-actions">
-    <div id="examClock" class="exam-clock hidden" aria-live="polite">100:00</div>
-    <button id="themeBtn" class="icon-btn" type="button" aria-label="Cambiar tema">◐</button>
+<main>
+  <div class="box" id="loading">
+    <div class="spinner"></div><h1>Simulador PME 2026</h1><p id="status">Cargando la versión auditada…</p><div class="progress"><div id="bar"></div></div>
   </div>
-</header>
-<div id="globalProgress" class="global-progress hidden"><div></div></div>
-<main id="app" class="shell">
-  <section id="homeView" class="view">
-    <div class="hero card">
-      <div>
-        <span class="verified-badge">✓ Banco auditado · versión <b id="bankVersionLabel">2026.08.04</b></span>
-        <h1>Prepárate con criterio de examen</h1>
-        <p>Simulacros oficiales 40 + 60, corrección explicada, fuentes oficiales, repaso de errores y entrenamiento por puntos débiles.</p>
-      </div>
-      <div class="hero-score" id="heroScore"><strong>—</strong><small>media reciente</small></div>
-    </div>
-    <div id="resumeCard" class="card resume-card hidden">
-      <div><span class="eyebrow">Test en curso</span><h2 id="resumeTitle">Simulacro</h2><p id="resumeText"></p></div>
-      <button id="resumeBtn" class="btn primary" type="button">Continuar</button>
-    </div>
-    <div class="action-grid">
-      <button id="officialExamBtn" class="action-card primary-action" type="button"><span class="action-icon">100</span><span><strong>Simulacro oficial</strong><small>100 preguntas · 100 minutos · 40 comunes + 60 específicas</small></span></button>
-      <button id="studyBtn" class="action-card" type="button"><span class="action-icon">⌁</span><span><strong>Modo estudio</strong><small>Elige tema y recibe corrección inmediata</small></span></button>
-      <button id="weakBtn" class="action-card" type="button"><span class="action-icon">↗</span><span><strong>Entrenar puntos débiles</strong><small>Preguntas adaptadas a tus estadísticas</small></span></button>
-      <button id="errorsBtn" class="action-card" type="button"><span class="action-icon">!</span><span><strong>Repasar errores</strong><small id="pendingErrorsText">Todavía no hay errores pendientes</small></span></button>
-    </div>
-    <div class="dashboard-grid">
-      <button id="statsBtn" class="card dashboard-card" type="button"><span>Estadísticas</span><strong id="statsAccuracy">—</strong><small>precisión acumulada</small></button>
-      <button id="notebookBtn" class="card dashboard-card" type="button"><span>Cuaderno de errores</span><strong id="notebookCount">0</strong><small>conceptos pendientes</small></button>
-      <button id="historyBtn" class="card dashboard-card" type="button"><span>Histórico</span><strong id="historyCount">0</strong><small>últimos simulacros</small></button>
-    </div>
-    <div class="card information-card">
-      <div><strong>Cómo se calcula</strong><p>+1 por acierto, −⅓ por error y 0 por pregunta en blanco. La puntuación es directa de entrenamiento; el Tribunal puede transformar el corte.</p></div>
-      <div><strong>Trazabilidad</strong><p>Cada corrección muestra explicación, norma o guía oficial, referencia concreta y fecha de revisión.</p></div>
-    </div>
-  </section>
-  <section id="setupView" class="view hidden">
-    <div class="view-heading"><button class="back-btn" data-home type="button">←</button><div><span class="eyebrow">Configuración</span><h1>Modo estudio</h1></div></div>
-    <div class="card form-card">
-      <label>Bloque<select id="studySection"><option value="all">Todo el temario</option><option value="Parte común">Parte común</option><option value="Parte específica">Parte específica</option></select></label>
-      <label>Tema<select id="studyTopic"><option value="all">Todos los temas</option></select></label>
-      <fieldset><legend>Número de preguntas</legend><div class="segmented" id="studyCount"><button type="button" data-count="10">10</button><button class="selected" type="button" data-count="20">20</button><button type="button" data-count="30">30</button><button type="button" data-count="50">50</button></div></fieldset>
-      <label class="toggle-row"><span><strong>Corrección inmediata</strong><small>Verás la explicación después de responder</small></span><input id="instantCorrection" type="checkbox" checked></label>
-      <button id="startStudyBtn" class="btn primary wide" type="button">Empezar sesión</button>
-    </div>
-  </section>
-  <section id="examView" class="view hidden">
-    <div class="exam-head"><div><span id="examModeLabel" class="eyebrow">Simulacro oficial</span><h1 id="examQuestionNumber">Pregunta 1 de 100</h1></div><button id="paletteBtn" class="btn ghost compact" type="button">Mapa</button></div>
-    <article id="questionCard" class="card question-card">
-      <div class="question-meta"><span id="questionSection" class="pill"></span><span id="questionTopic" class="muted"></span></div>
-      <h2 id="questionText"></h2><div id="optionsList" class="options-list"></div><div id="instantFeedback" class="instant-feedback hidden"></div>
-      <div class="confidence-box"><span>¿Cómo de segura es tu respuesta?</span><div class="confidence-buttons"><button type="button" data-confidence="safe">Segura</button><button type="button" data-confidence="doubt">Dudosa</button><button type="button" data-confidence="unknown">No la sé</button></div></div>
-      <div class="question-tools"><button id="clearAnswerBtn" class="text-btn" type="button">Borrar respuesta</button><button id="reportQuestionBtn" class="text-btn" type="button">Reportar pregunta</button></div>
-    </article>
-    <div class="exam-nav"><button id="prevBtn" class="btn secondary" type="button">Anterior</button><button id="finishBtn" class="btn danger-outline" type="button">Finalizar</button><button id="nextBtn" class="btn primary" type="button">Siguiente</button></div>
-  </section>
-  <section id="resultView" class="view hidden">
-    <div class="view-heading"><button class="back-btn" data-result-back type="button">←</button><div><span class="eyebrow">Resultado</span><h1 id="resultTitle">Simulacro completado</h1></div></div>
-    <div class="result-hero card"><div class="score-ring"><strong id="resultScore">0,0</strong><small>puntos</small></div><div><h2 id="resultLevel"></h2><p id="resultDate"></p><p id="resultDisclaimer" class="muted"></p></div></div>
-    <div class="metric-grid"><div class="metric ok"><strong id="resultCorrect">0</strong><span>Aciertos</span></div><div class="metric bad"><strong id="resultWrong">0</strong><span>Errores</span></div><div class="metric"><strong id="resultBlank">0</strong><span>En blanco</span></div><div class="metric"><strong id="resultTime">0:00</strong><span>Tiempo</span></div></div>
-    <div id="partBreakdown" class="card breakdown-card"></div><div id="confidenceSummary" class="card breakdown-card"></div>
-    <div class="result-actions"><button id="repeatWrongBtn" class="btn primary" type="button">Repetir falladas</button><button id="repeatAllPendingBtn" class="btn secondary" type="button">Falladas + en blanco</button><button id="resultStatsBtn" class="btn secondary" type="button">Ver estadísticas</button></div>
-    <div class="review-header"><div><span class="eyebrow">Corrección razonada</span><h2>Fallos y dudas</h2></div><select id="reviewFilter"><option value="pending">Falladas y en blanco</option><option value="wrong">Solo falladas</option><option value="blank">Solo en blanco</option><option value="all">Todas</option></select></div><div id="reviewList" class="review-list"></div>
-  </section>
-  <section id="statsView" class="view hidden">
-    <div class="view-heading"><button class="back-btn" data-home type="button">←</button><div><span class="eyebrow">Progreso</span><h1>Estadísticas</h1></div></div><div id="statsOverview" class="metric-grid"></div>
-    <div class="card chart-card"><h2>Evolución de simulacros</h2><div id="trendChart" class="trend-chart"></div></div>
-    <div class="card table-card"><div class="card-title-row"><h2>Rendimiento por tema</h2><button id="resetProgressBtn" class="text-btn danger-text" type="button">Reiniciar progreso</button></div><div id="topicStatsTable" class="topic-stats"></div></div>
-  </section>
-  <section id="notebookView" class="view hidden">
-    <div class="view-heading"><button class="back-btn" data-home type="button">←</button><div><span class="eyebrow">Repaso permanente</span><h1>Cuaderno de errores</h1></div></div>
-    <div class="card notebook-intro"><p>Una pregunta pasa a <b>dominada</b> cuando aciertas el mismo concepto tres veces después de haberlo fallado o dejado en blanco.</p><div class="segmented" id="notebookFilter"><button class="selected" data-filter="pending" type="button">Pendientes</button><button data-filter="mastered" type="button">Dominadas</button><button data-filter="all" type="button">Todas</button></div></div><div id="notebookList" class="notebook-list"></div>
-  </section>
-  <section id="historyView" class="view hidden"><div class="view-heading"><button class="back-btn" data-home type="button">←</button><div><span class="eyebrow">Últimos resultados</span><h1>Histórico</h1></div></div><div id="historyList" class="history-list"></div></section>
+  <div class="box error" id="error"><strong>No se ha podido abrir el simulador.</strong><p>Recarga la página. Si continúa, abre el enlace directamente en Safari, Chrome, Edge o Firefox.</p><p class="detail" id="detail"></p></div>
 </main>
-<dialog id="confirmDialog"><form method="dialog" class="dialog-card"><h2 id="dialogTitle"></h2><p id="dialogText"></p><div class="dialog-actions"><button value="cancel" class="btn secondary">Cancelar</button><button id="dialogConfirm" value="default" class="btn danger">Confirmar</button></div></form></dialog>
-<dialog id="paletteDialog"><div class="dialog-card palette-dialog"><div class="card-title-row"><div><span class="eyebrow">Navegación</span><h2>Mapa del test</h2></div><button id="closePaletteBtn" class="icon-btn" type="button">×</button></div><div class="palette-legend"><span><i class="answered"></i>Respondida</span><span><i class="doubt"></i>Dudosa</span><span><i></i>En blanco</span></div><div id="paletteGrid" class="palette-grid"></div></div></dialog>
-<script>window.PME_CONCEPT_PARTS=[];</script>
-<script src="bank/concepts-00.js?v=20260804"></script><script src="bank/concepts-01.js?v=20260804"></script><script src="bank/concepts-02.js?v=20260804"></script><script src="bank/concepts-03.js?v=20260804"></script><script src="bank/concepts-04.js?v=20260804"></script><script src="assets/app.js?v=20260804"></script>
+<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
+<script>
+(async()=>{
+ const VERSION='20260804b';
+ const PARTS=['part-00','part-01','part-02-00','part-02-01','part-03','part-04','part-05','part-06','part-07-00','part-07-01','part-07-02','part-07-03','part-07-04','part-07-05','part-07-06','part-07-07','part-07-08','part-07-09'];
+ const EXPECTED_LENGTH=92528;
+ const EXPECTED_SHA='eb420c6ae0c1812cd7e6f30e53aaf53e9ad87c685a539d7726a6ad635e52048c';
+ const status=document.getElementById('status'),bar=document.getElementById('bar');
+ const progress=(text,pct)=>{status.textContent=text;bar.style.width=pct+'%'};
+ const decodeText=(bytes)=>new TextDecoder('utf-8').decode(bytes);
+ function parseTar(bytes){
+   const files={};let offset=0;
+   while(offset+512<=bytes.length){
+     const header=bytes.subarray(offset,offset+512);
+     if(header.every(v=>v===0))break;
+     const read=(start,len)=>decodeText(header.subarray(start,start+len)).replace(/\0.*$/,'').trim();
+     const name=read(0,100),prefix=read(345,155),full=((prefix?prefix+'/':'')+name).replace(/^\.\//,'');
+     const size=parseInt(read(124,12)||'0',8)||0;
+     const start=offset+512,end=start+size;
+     if(end>bytes.length)throw new Error('Archivo TAR incompleto: '+full);
+     if(full&&!full.endsWith('/'))files[full]=decodeText(bytes.subarray(start,end));
+     offset=start+Math.ceil(size/512)*512;
+   }
+   return files;
+ }
+ function inlineSite(files){
+   let html=files['index.html'];
+   if(!html)throw new Error('Falta index.html en el paquete');
+   const css=files['assets/app.css'];
+   if(!css)throw new Error('Falta la hoja de estilos');
+   html=html.replace(/<link\s+rel="stylesheet"\s+href="assets\/app\.css[^>]*>/i,'<style>'+css+'</style>');
+   html=html.replace(/<script\s+src="([^"]+)"[^>]*><\/script>/gi,(tag,src)=>{
+     const path=src.split('?')[0],code=files[path];
+     if(code==null)throw new Error('Falta el recurso '+path);
+     return '<script>'+code.replace(/<\/script/gi,'<\\/script')+'<\/script>';
+   });
+   return html;
+ }
+ try{
+   progress('Descargando el banco verificado…',8);
+   const texts=[];
+   for(let i=0;i<PARTS.length;i++){
+     const r=await fetch('payload-v4/'+PARTS[i]+'?v='+VERSION,{cache:'no-store'});
+     if(!r.ok)throw new Error('No se pudo cargar '+PARTS[i]+' ('+r.status+')');
+     texts.push((await r.text()).trim());
+     progress('Descargando el banco verificado…',8+Math.round((i+1)/PARTS.length*42));
+   }
+   const b64=texts.join('');
+   if(b64.length!==EXPECTED_LENGTH)throw new Error('Datos incompletos: '+b64.length+' de '+EXPECTED_LENGTH);
+   const binary=atob(b64),gzip=Uint8Array.from(binary,c=>c.charCodeAt(0));
+   if(crypto?.subtle){
+     const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',gzip))].map(x=>x.toString(16).padStart(2,'0')).join('');
+     if(hash!==EXPECTED_SHA)throw new Error('La comprobación de integridad no coincide');
+   }
+   progress('Verificando las 1.000 preguntas…',58);
+   let tar;
+   if('DecompressionStream'in window){
+     const stream=new Blob([gzip]).stream().pipeThrough(new DecompressionStream('gzip'));
+     tar=new Uint8Array(await new Response(stream).arrayBuffer());
+   }else if(window.pako){tar=window.pako.ungzip(gzip)}else throw new Error('Este navegador no permite preparar los datos');
+   progress('Preparando el simulador…',76);
+   const files=parseTar(tar),html=inlineSite(files);
+   if(!html.includes('assertBank()')||!html.includes('PME_CONCEPT_PARTS'))throw new Error('El paquete no contiene la aplicación validada');
+   progress('Abriendo…',100);
+   document.open();document.write(html);document.close();
+ }catch(e){
+   console.error(e);document.getElementById('loading').style.display='none';document.getElementById('error').style.display='block';document.getElementById('detail').textContent=String(e?.message||e);
+ }
+})();
+</script>
 </body>
 </html>
