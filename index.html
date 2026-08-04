@@ -7,84 +7,83 @@
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
   <title>Simulador PME 2026</title>
   <style>
-    html,body{margin:0;min-height:100%;background:#0b1f33;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{min-height:100vh;display:grid;place-items:center;padding:24px;box-sizing:border-box}.box{width:min(460px,100%);text-align:center}.spinner{width:48px;height:48px;margin:0 auto 20px;border:5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}h1{font-size:28px;margin:0 0 10px}p{opacity:.78;line-height:1.5}.progress{height:7px;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:20px}.progress div{height:100%;width:3%;background:#59b6ec;transition:width .25s}.error{display:none;background:#fff;color:#14202c;padding:22px;border-radius:17px;text-align:left}.error strong{font-size:20px}.detail{font-size:12px;color:#657487;word-break:break-word}
+    html,body{margin:0;min-height:100%;background:#0b1f33;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{min-height:100vh;display:grid;place-items:center;padding:24px;box-sizing:border-box}.box{width:min(460px,100%);text-align:center}
+    .spinner{width:48px;height:48px;margin:0 auto 20px;border:5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
+    h1{font-size:28px;margin:0 0 10px}p{opacity:.8;line-height:1.5}.progress{height:7px;border-radius:999px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:20px}.progress div{height:100%;width:3%;background:#59b6ec;transition:width .2s}
+    .error{display:none;background:#fff;color:#14202c;padding:22px;border-radius:17px;text-align:left}.error strong{font-size:20px}.detail{font-size:12px;color:#657487;word-break:break-word}
   </style>
 </head>
 <body>
 <main>
-  <div class="box" id="loading">
-    <div class="spinner"></div><h1>Simulador PME 2026</h1><p id="status">Cargando la versión auditada…</p><div class="progress"><div id="bar"></div></div>
-  </div>
+  <div class="box" id="loading"><div class="spinner"></div><h1>Simulador PME 2026</h1><p id="status">Cargando la versión auditada…</p><div class="progress"><div id="bar"></div></div></div>
   <div class="box error" id="error"><strong>No se ha podido abrir el simulador.</strong><p>Recarga la página. Si continúa, abre el enlace directamente en Safari, Chrome, Edge o Firefox.</p><p class="detail" id="detail"></p></div>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 <script>
 (async()=>{
- const VERSION='20260804b';
- const PARTS=['part-00','part-01','part-02-00','part-02-01','part-03','part-04','part-05','part-06','part-07-00','part-07-01','part-07-02','part-07-03','part-07-04','part-07-05','part-07-06','part-07-07','part-07-08','part-07-09'];
- const EXPECTED_LENGTH=92528;
- const EXPECTED_SHA='eb420c6ae0c1812cd7e6f30e53aaf53e9ad87c685a539d7726a6ad635e52048c';
- const status=document.getElementById('status'),bar=document.getElementById('bar');
- const progress=(text,pct)=>{status.textContent=text;bar.style.width=pct+'%'};
- const decodeText=(bytes)=>new TextDecoder('utf-8').decode(bytes);
- function parseTar(bytes){
-   const files={};let offset=0;
-   while(offset+512<=bytes.length){
-     const header=bytes.subarray(offset,offset+512);
-     if(header.every(v=>v===0))break;
-     const read=(start,len)=>decodeText(header.subarray(start,start+len)).replace(/\0.*$/,'').trim();
-     const name=read(0,100),prefix=read(345,155),full=((prefix?prefix+'/':'')+name).replace(/^\.\//,'');
-     const size=parseInt(read(124,12)||'0',8)||0;
-     const start=offset+512,end=start+size;
-     if(end>bytes.length)throw new Error('Archivo TAR incompleto: '+full);
-     if(full&&!full.endsWith('/'))files[full]=decodeText(bytes.subarray(start,end));
-     offset=start+Math.ceil(size/512)*512;
-   }
-   return files;
- }
- function inlineSite(files){
-   let html=files['index.html'];
-   if(!html)throw new Error('Falta index.html en el paquete');
-   const css=files['assets/app.css'];
-   if(!css)throw new Error('Falta la hoja de estilos');
-   html=html.replace(/<link\s+rel="stylesheet"\s+href="assets\/app\.css[^>]*>/i,'<style>'+css+'</style>');
-   html=html.replace(/<script\s+src="([^"]+)"[^>]*><\/script>/gi,(tag,src)=>{
-     const path=src.split('?')[0],code=files[path];
-     if(code==null)throw new Error('Falta el recurso '+path);
-     return '<script>'+code.replace(/<\/script/gi,'<\\/script')+'<\/script>';
-   });
-   return html;
- }
- try{
-   progress('Descargando el banco verificado…',8);
-   const texts=[];
-   for(let i=0;i<PARTS.length;i++){
-     const r=await fetch('payload-v4/'+PARTS[i]+'?v='+VERSION,{cache:'no-store'});
-     if(!r.ok)throw new Error('No se pudo cargar '+PARTS[i]+' ('+r.status+')');
-     texts.push((await r.text()).trim());
-     progress('Descargando el banco verificado…',8+Math.round((i+1)/PARTS.length*42));
-   }
-   const b64=texts.join('');
-   if(b64.length!==EXPECTED_LENGTH)throw new Error('Datos incompletos: '+b64.length+' de '+EXPECTED_LENGTH);
-   const binary=atob(b64),gzip=Uint8Array.from(binary,c=>c.charCodeAt(0));
-   if(crypto?.subtle){
-     const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',gzip))].map(x=>x.toString(16).padStart(2,'0')).join('');
-     if(hash!==EXPECTED_SHA)throw new Error('La comprobación de integridad no coincide');
-   }
-   progress('Verificando las 1.000 preguntas…',58);
-   let tar;
-   if('DecompressionStream'in window){
-     const stream=new Blob([gzip]).stream().pipeThrough(new DecompressionStream('gzip'));
-     tar=new Uint8Array(await new Response(stream).arrayBuffer());
-   }else if(window.pako){tar=window.pako.ungzip(gzip)}else throw new Error('Este navegador no permite preparar los datos');
-   progress('Preparando el simulador…',76);
-   const files=parseTar(tar),html=inlineSite(files);
-   if(!html.includes('assertBank()')||!html.includes('PME_CONCEPT_PARTS'))throw new Error('El paquete no contiene la aplicación validada');
-   progress('Abriendo…',100);
-   document.open();document.write(html);document.close();
- }catch(e){
-   console.error(e);document.getElementById('loading').style.display='none';document.getElementById('error').style.display='block';document.getElementById('detail').textContent=String(e?.message||e);
- }
+  const VERSION='20260804c';
+  const PARTS=['part-00','part-01','part-02-00','part-02-01','part-03','part-04','part-05','part-06','part-07-00','part-07-01','part-07-02','part-07-03','part-07-04','part-07-05','part-07-06','part-07-07a','part-07-07b','part-07-08','part-07-09'];
+  const EXPECTED_LENGTH=92528;
+  const EXPECTED_SHA='eb420c6ae0c1812cd7e6f30e53aaf53e9ad87c685a539d7726a6ad635e52048c';
+  const status=document.getElementById('status'),bar=document.getElementById('bar');
+  const progress=(text,pct)=>{status.textContent=text;bar.style.width=pct+'%'};
+  const decodeText=bytes=>new TextDecoder('utf-8').decode(bytes);
+  const showError=e=>{console.error(e);document.getElementById('loading').style.display='none';document.getElementById('error').style.display='block';document.getElementById('detail').textContent=String(e?.message||e)};
+  function parseTar(bytes){
+    const files={};let offset=0;
+    while(offset+512<=bytes.length){
+      const header=bytes.subarray(offset,offset+512);
+      if(header.every(v=>v===0))break;
+      const read=(start,len)=>decodeText(header.subarray(start,start+len)).replace(/\0.*$/,'').trim();
+      const name=read(0,100),prefix=read(345,155),full=((prefix?prefix+'/':'')+name).replace(/^\.\//,'');
+      const size=parseInt(read(124,12)||'0',8)||0,start=offset+512,end=start+size;
+      if(end>bytes.length)throw new Error('Archivo TAR incompleto: '+full);
+      if(full&&!full.endsWith('/'))files[full]=decodeText(bytes.subarray(start,end));
+      offset=start+Math.ceil(size/512)*512;
+    }
+    return files;
+  }
+  function inlineSite(files){
+    let html=files['index.html'];
+    if(!html)throw new Error('Falta index.html en el paquete');
+    const css=files['assets/app.css'];
+    if(!css)throw new Error('Falta la hoja de estilos');
+    html=html.replace(/<link\s+rel="stylesheet"\s+href="assets\/app\.css[^>]*>/i,'<style>'+css+'</style>');
+    html=html.replace(/<script\s+src="([^"]+)"[^>]*><\/script>/gi,(tag,src)=>{
+      const path=src.split('?')[0],code=files[path];
+      if(code==null)throw new Error('Falta el recurso '+path);
+      return '<script>'+code.replace(/<\/script/gi,'<\\/script')+'<\/script>';
+    });
+    return html;
+  }
+  try{
+    progress('Descargando el banco verificado…',5);
+    const texts=[];
+    for(let i=0;i<PARTS.length;i++){
+      const r=await fetch('payload-v4/'+PARTS[i]+'?v='+VERSION,{cache:'no-store'});
+      if(!r.ok)throw new Error('No se pudo cargar '+PARTS[i]+' ('+r.status+')');
+      texts.push((await r.text()).trim());
+      progress('Descargando el banco verificado…',5+Math.round((i+1)/PARTS.length*45));
+    }
+    const b64=texts.join('');
+    if(b64.length!==EXPECTED_LENGTH)throw new Error('Datos incompletos: '+b64.length+' de '+EXPECTED_LENGTH);
+    const binary=atob(b64),gzip=Uint8Array.from(binary,c=>c.charCodeAt(0));
+    if(!crypto?.subtle)throw new Error('El navegador no permite verificar la integridad');
+    const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',gzip))].map(x=>x.toString(16).padStart(2,'0')).join('');
+    if(hash!==EXPECTED_SHA)throw new Error('La comprobación de integridad no coincide');
+    progress('Verificando las 1.000 preguntas…',60);
+    let tar;
+    if('DecompressionStream' in window){
+      const stream=new Blob([gzip]).stream().pipeThrough(new DecompressionStream('gzip'));
+      tar=new Uint8Array(await new Response(stream).arrayBuffer());
+    }else if(window.pako){tar=window.pako.ungzip(gzip)}else throw new Error('Este navegador no permite preparar los datos');
+    progress('Preparando el simulador…',78);
+    const files=parseTar(tar),html=inlineSite(files);
+    if(!html.includes('assertBank()')||!html.includes('PME_CONCEPT_PARTS'))throw new Error('El paquete no contiene la aplicación validada');
+    progress('Abriendo…',100);
+    document.open();document.write(html);document.close();
+  }catch(e){showError(e)}
 })();
 </script>
 </body>
