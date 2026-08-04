@@ -22,7 +22,7 @@
 <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 <script>
 (async()=>{
-  const VERSION='20260804c';
+  const VERSION='20260804e';
   const PARTS=['part-00','part-01','part-02-00','part-02-01','part-03','part-04','part-05','part-06','part-07-00','part-07-01','part-07-02','part-07-03','part-07-04','part-07-05','part-07-06','part-07-07a','part-07-07b','part-07-08','part-07-09'];
   const EXPECTED_LENGTH=92528;
   const EXPECTED_SHA='eb420c6ae0c1812cd7e6f30e53aaf53e9ad87c685a539d7726a6ad635e52048c';
@@ -55,6 +55,11 @@
       if(code==null)throw new Error('Falta el recurso '+path);
       return '<script>'+code.replace(/<\/script/gi,'<\\/script')+'<\/script>';
     });
+    html=html.replace(/(<button id="historyBtn"[\s\S]*?<\/button>\s*)(<\/div>)/i,'$1<button id="resetStatsHomeBtn" class="card dashboard-card reset-dashboard" type="button"><span>Reiniciar estadísticas</span><strong aria-hidden="true">↺</strong><small>Borrar datos de prueba</small></button>$2');
+    html=html.replace(/<button id="resetProgressBtn"[^>]*>[\s\S]*?<\/button>/i,'<button id="resetProgressBtn" class="btn danger-outline compact" type="button">Reiniciar estadísticas</button>');
+    html=html.replace('</head>','<style>.dashboard-grid{grid-template-columns:repeat(4,1fr)}.reset-dashboard{border-color:color-mix(in srgb,var(--bad) 42%,var(--line));background:color-mix(in srgb,var(--badbg) 48%,var(--panel))}.reset-dashboard strong,.reset-dashboard span{color:var(--bad)}.reset-dashboard:hover{border-color:var(--bad)}@media(max-width:760px){.dashboard-grid{grid-template-columns:1fr 1fr}}@media(max-width:420px){.dashboard-grid{grid-template-columns:1fr}}</style></head>');
+    const resetScript=`<script>(function(){function clearStatistics(){['pme1000_progress_v4','pme1000_errors_v4','pme1000_history_v4'].forEach(function(k){try{localStorage.removeItem(k)}catch(e){}});try{lastResult=null}catch(e){};if(typeof renderHome==='function')renderHome();if(typeof renderStats==='function')renderStats();if(typeof renderNotebook==='function')renderNotebook();if(typeof renderHistory==='function')renderHistory();if(typeof show==='function')show('stats')}function askReset(){var text='Se eliminarán las estadísticas, el histórico y el cuaderno de errores. El test que tengas en curso y el tema visual se conservarán. Esta acción no se puede deshacer.';if(typeof confirmAction==='function')confirmAction('Reiniciar estadísticas',text,clearStatistics);else if(window.confirm(text))clearStatistics()}var current=document.getElementById('resetProgressBtn');if(current){var fresh=current.cloneNode(true);current.replaceWith(fresh);fresh.addEventListener('click',askReset)}var home=document.getElementById('resetStatsHomeBtn');if(home)home.addEventListener('click',askReset)})();<\/script>`;
+    html=html.replace('</body>',resetScript+'</body>');
     return html;
   }
   try{
