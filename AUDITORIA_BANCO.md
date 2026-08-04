@@ -26,11 +26,15 @@ Cada concepto deberá incluir:
 
 El banco actual contiene 250 conceptos con cuatro formulaciones cada uno, equivalentes a 1.000 preguntas. La auditoría se realizará sobre los 250 conceptos; las variantes solo se regenerarán después de aprobar el concepto base.
 
+## Progreso
+
+**20 de 250 conceptos revisados (8 %).**
+
 ## Bloques
 
 ### Parte común
 
-- [ ] Tema 1. Constitución Española de 1978 — 20 conceptos
+- [x] Tema 1. Constitución Española de 1978 — 20 conceptos
 - [ ] Tema 2. Gobierno y Administración — 20 conceptos
 - [ ] Tema 3. Régimen jurídico del personal público — 20 conceptos
 - [ ] Tema 4. Contrato de trabajo en la Administración — 20 conceptos
