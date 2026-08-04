@@ -22,7 +22,7 @@
 <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
 <script>
 (async()=>{
-  const VERSION='20260804e';
+  const VERSION='20260804f';
   const PARTS=['part-00','part-01','part-02-00','part-02-01','part-03','part-04','part-05','part-06','part-07-00','part-07-01','part-07-02','part-07-03','part-07-04','part-07-05','part-07-06','part-07-07a','part-07-07b','part-07-08','part-07-09'];
   const EXPECTED_LENGTH=92528;
   const EXPECTED_SHA='eb420c6ae0c1812cd7e6f30e53aaf53e9ad87c685a539d7726a6ad635e52048c';
@@ -55,6 +55,17 @@
       if(code==null)throw new Error('Falta el recurso '+path);
       return '<script>'+code.replace(/<\/script/gi,'<\\/script')+'<\/script>';
     });
+
+    // Corrección del resultado en sesiones cortas: se valora sobre las preguntas realizadas, no sobre 100.
+    html=html.replace('<div class="score-ring"><strong id="resultScore">0,0</strong><small>puntos</small></div>','<div class="score-ring"><strong id="resultScore">0,0</strong><small id="resultScoreUnit">puntos</small></div>');
+    html=html.replace(/function resultLevel\(s\)\{[\s\S]*?\}(?=\nfunction reconstructQuestions)/,
+      "function sessionTotal(rec){return rec.correct+rec.wrong+rec.blank}function sessionPercent(rec){const total=sessionTotal(rec);return total?rec.score/total*100:0}function resultLevel(rec){const s=rec.mode==='official'?rec.score:sessionPercent(rec);if(s>=85)return'Nivel excelente';if(s>=75)return'Nivel sólido';if(s>=65)return'Buen nivel';if(s>=50)return rec.mode==='official'?'Base aprobatoria orientativa':'Sesión superada';return'Hay que reforzar el temario'}function resultScoreText(rec){return rec.mode==='official'?formatScore(rec.score):`${formatScore(sessionPercent(rec))} %`}function resultScoreUnitLabel(rec){return rec.mode==='official'?'puntos':'rendimiento neto'}function resultSummary(rec,auto=false){if(auto)return'El tiempo terminó y la sesión se entregó automáticamente.';if(rec.mode==='official')return'Puntuación directa de entrenamiento sobre 100. No equivale necesariamente al corte transformado que determine el Tribunal.';const total=sessionTotal(rec);return `Sesión de ${total} preguntas: ${formatScore(rec.score)} puntos netos de ${total} (${formatScore(sessionPercent(rec))} %).`}");
+    html=html.replace("function renderResult(rec,questions,auto=false){lastResult={record:rec,questions};$('resultTitle').textContent=rec.title;$('resultScore').textContent=formatScore(rec.score);$('resultLevel').textContent=resultLevel(rec.score);$('resultDate').textContent=formatDate(rec.date);$('resultDisclaimer').textContent=auto?'El tiempo terminó y la sesión se entregó automáticamente.':'Puntuación directa de entrenamiento. No equivale necesariamente al corte transformado que determine el Tribunal.';$('resultCorrect').textContent=rec.correct;$('resultWrong').textContent=rec.wrong;$('resultBlank').textContent=rec.blank;$('resultTime').textContent=formatDuration(rec.duration);",
+      "function renderResult(rec,questions,auto=false){lastResult={record:rec,questions};$('resultTitle').textContent=rec.title;$('resultScore').textContent=resultScoreText(rec);$('resultScoreUnit').textContent=resultScoreUnitLabel(rec);$('resultLevel').textContent=resultLevel(rec);$('resultDate').textContent=formatDate(rec.date);$('resultDisclaimer').textContent=resultSummary(rec,auto);$('resultCorrect').textContent=rec.correct;$('resultWrong').textContent=rec.wrong;$('resultBlank').textContent=rec.blank;$('resultTime').textContent=formatDuration(rec.duration);");
+    html=html.replace(/function renderHistory\(\)\{[\s\S]*?\}(?=\nfunction openHistory)/,
+      "function renderHistory(){const h=currentHistory();$('historyList').innerHTML=h.length?h.map(r=>{const official=r.mode==='official',score=official?formatScore(r.score):`${formatScore(sessionPercent(r))} %`,unit=official?'puntos':'rendimiento';return `<button class=\"history-card\" data-history=\"${r.id}\" type=\"button\"><div class=\"history-score\"><strong>${score}</strong><small>${unit}</small></div><div><span class=\"eyebrow\">${esc(r.title)}</span><h3>${formatDate(r.date)}</h3><p>${r.correct} aciertos · ${r.wrong} fallos · ${r.blank} en blanco</p><p>${formatDuration(r.duration)} · banco ${esc(r.bankVersion||'anterior')}</p></div></button>`}).join(''):'<div class=\"card empty\">Todavía no hay resultados guardados.</div>'}");
+
+    // Botón para borrar estadísticas de prueba sin eliminar una sesión en curso ni el tema visual.
     html=html.replace(/(<button id="historyBtn"[\s\S]*?<\/button>\s*)(<\/div>)/i,'$1<button id="resetStatsHomeBtn" class="card dashboard-card reset-dashboard" type="button"><span>Reiniciar estadísticas</span><strong aria-hidden="true">↺</strong><small>Borrar datos de prueba</small></button>$2');
     html=html.replace(/<button id="resetProgressBtn"[^>]*>[\s\S]*?<\/button>/i,'<button id="resetProgressBtn" class="btn danger-outline compact" type="button">Reiniciar estadísticas</button>');
     html=html.replace('</head>','<style>.dashboard-grid{grid-template-columns:repeat(4,1fr)}.reset-dashboard{border-color:color-mix(in srgb,var(--bad) 42%,var(--line));background:color-mix(in srgb,var(--badbg) 48%,var(--panel))}.reset-dashboard strong,.reset-dashboard span{color:var(--bad)}.reset-dashboard:hover{border-color:var(--bad)}@media(max-width:760px){.dashboard-grid{grid-template-columns:1fr 1fr}}@media(max-width:420px){.dashboard-grid{grid-template-columns:1fr}}</style></head>');
@@ -85,7 +96,7 @@
     }else if(window.pako){tar=window.pako.ungzip(gzip)}else throw new Error('Este navegador no permite preparar los datos');
     progress('Preparando el simulador…',78);
     const files=parseTar(tar),html=inlineSite(files);
-    if(!html.includes('assertBank()')||!html.includes('PME_CONCEPT_PARTS'))throw new Error('El paquete no contiene la aplicación validada');
+    if(!html.includes('assertBank()')||!html.includes('PME_CONCEPT_PARTS')||!html.includes('sessionPercent(rec)'))throw new Error('El paquete no contiene la aplicación validada');
     progress('Abriendo…',100);
     document.open();document.write(html);document.close();
   }catch(e){showError(e)}
