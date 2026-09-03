@@ -7,7 +7,7 @@
 
 ## Resultado
 
-Se han revisado los 20 conceptos base que generan actualmente 80 preguntas. Las respuestas correctas son conformes con los artículos citados. Antes de publicar el banco auditado se regenerarán las variantes para que sean formulaciones realmente distintas y no simples enunciados con frases introductorias.
+Se han revisado los 20 conceptos base que generan actualmente 120 formulaciones. Las respuestas correctas son conformes con los artículos citados. El modo estudio no usa esas formulaciones como conceptos independientes: en una sesión temática de este bloque el máximo sin equivalencias repetidas es de 20 preguntas.
 
 | ID | Materia | Precepto | Resultado |
 |---|---|---:|---|
@@ -41,11 +41,9 @@ Se han revisado los 20 conceptos base que generan actualmente 80 preguntas. Las 
 - En F011 se indicará expresamente que la comunicación previa de ciertas reuniones no es una autorización.
 - En F012 se podrá ampliar la explicación con la definición completa, sin convertirla en una respuesta distinta.
 
-## Pendiente antes de producción
+## Estado de producción
 
-1. Regenerar cuatro variantes útiles por concepto.
-2. Incorporar metadatos de fuente, versión y fecha de revisión al banco.
-3. Ejecutar validaciones automáticas: cuatro opciones, una única correcta, referencia obligatoria y ausencia de duplicados.
-4. Integrar la corrección explicada en la interfaz.
-
-Ningún cambio de este bloque se publicará en la web principal hasta que el conjunto de la auditoría y las pruebas funcionales estén terminados.
+1. Seis formulaciones útiles por concepto.
+2. Metadatos de fuente, versión y fecha de revisión incorporados al banco.
+3. Validaciones automáticas: cuatro opciones, una única correcta, referencia obligatoria y ausencia de duplicados.
+4. Corrección integrada en la interfaz para impedir sesiones con conceptos repetidos.
