@@ -31,24 +31,24 @@ La ampliación de 1.000 a 1.500 formulaciones no introduce hechos jurídicos nue
 
 ### Parte común
 
-- [x] Tema 1. Constitución Española de 1978 — 20 conceptos / 120 preguntas
-- [x] Tema 2. Gobierno y Administración — 20 conceptos / 120 preguntas
-- [x] Tema 3. Régimen jurídico del personal público — 20 conceptos / 120 preguntas
-- [x] Tema 4. Contrato de trabajo en la Administración — 20 conceptos / 120 preguntas
-- [x] Tema 5. Igualdad, violencia de género, discapacidad, dependencia y no discriminación LGTBI — 20 conceptos / 120 preguntas
+- [x] Tema 1. Constitución Española de 1978 — 20 conceptos independientes / 120 formulaciones
+- [x] Tema 2. Gobierno y Administración — 20 conceptos independientes / 120 formulaciones
+- [x] Tema 3. Régimen jurídico del personal público — 20 conceptos independientes / 120 formulaciones
+- [x] Tema 4. Contrato de trabajo en la Administración — 20 conceptos independientes / 120 formulaciones
+- [x] Tema 5. Igualdad, violencia de género, discapacidad, dependencia y no discriminación LGTBI — 20 conceptos independientes / 120 formulaciones
 
 ### Parte específica
 
-- [x] Tema 1. Conductor, permisos, infracciones y sanciones — 15 conceptos / 90 preguntas
-- [x] Tema 2. Vehículo, documentación, carga y personas — 15 conceptos / 90 preguntas
-- [x] Tema 3. Seguridad activa y pasiva — 15 conceptos / 90 preguntas
-- [x] Tema 4. La vía y su utilización — 15 conceptos / 90 preguntas
-- [x] Tema 5. Velocidad y distancias — 15 conceptos / 90 preguntas
-- [x] Tema 6. Maniobras — 15 conceptos / 90 preguntas
-- [x] Tema 7. Conducción nocturna y condiciones adversas — 15 conceptos / 90 preguntas
-- [x] Tema 8. Señalización — 15 conceptos / 90 preguntas
-- [x] Tema 9. Accidentes, delitos, alcohol y drogas — 15 conceptos / 90 preguntas
-- [x] Tema 10. Elementos y funcionamiento del vehículo — 15 conceptos / 90 preguntas
+- [x] Tema 1. Conductor, permisos, infracciones y sanciones — 15 conceptos independientes / 90 formulaciones
+- [x] Tema 2. Vehículo, documentación, carga y personas — 15 conceptos independientes / 90 formulaciones
+- [x] Tema 3. Seguridad activa y pasiva — 15 conceptos independientes / 90 formulaciones
+- [x] Tema 4. La vía y su utilización — 15 conceptos independientes / 90 formulaciones
+- [x] Tema 5. Velocidad y distancias — 15 conceptos independientes / 90 formulaciones
+- [x] Tema 6. Maniobras — 15 conceptos independientes / 90 formulaciones
+- [x] Tema 7. Conducción nocturna y condiciones adversas — 15 conceptos independientes / 90 formulaciones
+- [x] Tema 8. Señalización — 15 conceptos independientes / 90 formulaciones
+- [x] Tema 9. Accidentes, delitos, alcohol y drogas — 15 conceptos independientes / 90 formulaciones
+- [x] Tema 10. Elementos y funcionamiento del vehículo — 15 conceptos independientes / 90 formulaciones
 
 ## Controles aplicados
 
